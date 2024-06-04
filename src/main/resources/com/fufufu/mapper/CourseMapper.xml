@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fufufu.mapper.CourseMapper">
+    <!--动态sql-->
+    <select id="listByTeacher" resultType="com.fufufu.pojo.Course">
+        select course.* , teacher.nickname as teaNickname from course
+        left join teacher
+        on course.create_user = teacher.id and course.role = teacher.role
+        <where>
+            <if test="name != null">
+                and course.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="no != null">
+                and course.no LIKE CONCAT('%', #{no}, '%')
+            </if>
+            <if test="teacher != null">
+                and course.teacher LIKE CONCAT('%', #{teacher}, '%')
+            </if>
+            and course.create_user=#{userId} and course.role=#{role}
+        </where>
+    </select>
+
+    <select id="listByAdmin" resultType="com.fufufu.pojo.Course">
+        select course.* , teacher.nickname as teaNickname , admin.nickname as adminNickname
+        from course
+        left join teacher
+        on course.create_user = teacher.id and course.role = teacher.role
+        left join admin
+        on course.create_user = admin.id and course.role = admin.role
+        <where>
+            <if test="name != null">
+                and course.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="no != null">
+                and course.no LIKE CONCAT('%', #{no}, '%')
+            </if>
+            <if test="teacher != null">
+                and course.teacher LIKE CONCAT('%', #{teacher}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="listByStudent" resultType="com.fufufu.pojo.Course">
+        select course.* , teacher.nickname as teaNickname
+        from course
+        left join teacher
+        on course.create_user = teacher.id and course.role = teacher.role
+        <where>
+            <if test="name != null">
+                and course.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="no != null">
+                and course.no LIKE CONCAT('%', #{no}, '%')
+            </if>
+            <if test="teacher != null">
+                and course.teacher LIKE CONCAT('%', #{teacher}, '%')
+            </if>
+            and course.role=#{role}
+        </where>
+        order by course.no asc <!-- 这里添加了排序 -->
+    </select>
+</mapper>

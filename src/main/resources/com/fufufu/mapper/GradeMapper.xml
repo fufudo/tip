@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fufufu.mapper.GradeMapper">
+
+    <!-- 定义可重用的SQL片段 -->
+    <sql id="selectGradeCommon">
+        select grade.*, student.nickname as stuNickname, course.name as courseName, teacher.nickname as teaNickname
+        from grade
+        left join student on grade.student_id = student.id
+        left join course on grade.course_id = course.id
+        left join teacher on grade.teacher_id = teacher.id
+        <where>
+            <if test="courseName != null">and course.name like concat('%',#{courseName},'%')</if>
+            <if test="stuNickname != null">and student.nickname like concat('%',#{stuNickname},'%')</if>
+            <if test="teaNickname != null">and teacher.nickname like concat('%',#{teaNickname},'%')</if>
+        </where>
+    </sql>
+
+    <!-- 使用可重用的SQL片段 -->
+    <select id="selectAll" resultType="com.fufufu.pojo.Grade">
+        <include refid="selectGradeCommon" />
+    </select>
+
+    <select id="selectByTeacher" resultType="com.fufufu.pojo.Grade">
+        <include refid="selectGradeCommon" />
+        <if test="teacherId != null">and grade.teacher_id = #{teacherId}</if>
+    </select>
+
+    <select id="selectByStudent" resultType="com.fufufu.pojo.Grade">
+        <include refid="selectGradeCommon" />
+        <if test="studentId != null">and grade.student_id = #{studentId}</if>
+    </select>
+
+
+
+    <!--   <select id="selectAll" resultType="com.fufufu.pojo.Grade">
+            select grade.*, student.nickname as stuNickname, course.name as courseName , teacher.nickname as teaNickname
+            from grade
+            left join student
+            on grade.student_id = student.id
+            left join course
+            on grade.course_id = course.id
+            left join teacher
+            on grade.teacher_id = teacher.id
+            <where>
+                <if test="courseName != null">and course.name like concat('%',#{courseName},'%')</if>
+                <if test="stuNickname != null">and student.nickname like concat('%',#{stuNickname},'%')</if>
+                <if test="teaNickname != null">and teacher.nickname like concat('%',#{teaNickname},'%')</if>
+                &lt;!&ndash;<if test="studentId != null">and grade.student_id = #{studentId} </if>&ndash;&gt;
+            </where>
+       </select>
+
+       <select id="selectByTeacher" resultType="com.fufufu.pojo.Grade">
+           select grade.*, student.nickname as stuNickname, course.name as courseName , teacher.nickname as teaNickname
+           from grade
+           left join student
+           on grade.student_id = student.id
+           left join course
+           on grade.course_id = course.id
+           left join teacher
+           on grade.teacher_id = teacher.id
+           <where>
+               <if test="courseName != null">and course.name like concat('%',#{courseName},'%')</if>
+               <if test="stuNickname != null">and student.nickname like concat('%',#{stuNickname},'%')</if>
+               <if test="teaNickname != null">and teacher.nickname like concat('%',#{teaNickname},'%')</if>
+               and grade.teacher_id = #{teacherId}
+           </where>
+       </select>
+
+       <select id="selectByStudent" resultType="com.fufufu.pojo.Grade">
+           select grade.*, student.nickname as stuNickname, course.name as courseName , teacher.nickname as teaNickname
+           from grade
+           left join student
+           on grade.student_id = student.id
+           left join course
+           on grade.course_id = course.id
+           left join teacher
+           on grade.teacher_id = teacher.id
+           <where>
+               <if test="courseName != null">and course.name like concat('%',#{courseName},'%')</if>
+               <if test="stuNickname != null">and student.nickname like concat('%',#{stuNickname},'%')</if>
+               <if test="teaNickname != null">and teacher.nickname like concat('%',#{teaNickname},'%')</if>
+           and grade.student_id = #{studentId}
+           </where>
+       </select>
+   -->
+<!--    <select id="selectByStudent" resultType="com.fufufu.pojo.Grade">
+        select grade.*, student.nickname as stuNickname, course.name as courseName
+        from grade
+        left join student on grade.student_id = student.id
+        left join course on grade.course_id = course.id
+        where grade.student_id = #{studentId}
+        <if test="stuNickname != null">
+            and student.nickname like concat('%',#{stuNickname},'%')
+        </if>
+        <if test="courseName != null">
+            and course.name like concat('%',#{courseName},'%')
+        </if>
+    </select>-->
+
+
+</mapper>

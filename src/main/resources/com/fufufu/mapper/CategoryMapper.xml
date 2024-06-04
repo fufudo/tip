@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fufufu.mapper.CategoryMapper">
+    <!--动态sql-->
+    <select id="listByAdmin" resultType="com.fufufu.pojo.Category">
+        select c.* ,
+        t.nickname as teaNickname,
+        s.nickname as stuNickname
+        from
+        category c
+        left join
+        teacher t
+        on
+        c.create_user = t.id and c.role = t.role
+        left join
+        student s
+        on
+        c.create_user = s.id and c.role = s.role
+        <where>
+            <if test="categoryId!=null">
+                c.category_id=#{categoryId}
+            </if>
+
+            <if test="state!=null">
+                and c.state=#{state}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

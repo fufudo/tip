@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fufufu.mapper.StudentCourseMapper">
+
+    <select id="selectAll" resultType="com.fufufu.pojo.StudentCourse">
+        select  sc.* , t.nickname as teaNickname
+        from
+        student_course sc
+        left join
+        teacher t
+        on
+        sc.teacher_id = t.id
+        <where>
+            <if test="name != null and name != '' ">
+                and sc.name like concat('%',#{name},'%')
+            </if>
+            <if test="no != null and no != '' ">
+                and sc.no like concat('%',#{no},'%')
+            </if>
+            and sc.student_id = #{studentId}
+        </where>
+    </select>
+
+    <select id="selectAllByAdmin" resultType="com.fufufu.pojo.StudentCourse">
+        <!-- WHERE 1 = 1是一个常用的技巧，用于确保动态生成的SQL语句在语法上是正确的，即使没有任何<if>条件被满足。 -->
+        select
+        student_course.*,
+        student.nickname as stuNickname,
+        student.username as stuUsername,
+        teacher.nickname as teaNickname
+        from
+        student_course
+        left join
+        student
+        on
+        student_course.student_id = student.id
+        left join
+        teacher
+        on
+        student_course.teacher_id = teacher.id
+        <where>
+            <if test="name != null and name != '' ">
+                and student_course.name like concat('%',#{name},'%')
+            </if>
+            <if test="no != null and no != '' ">
+                and student_course.no like concat('%',#{no},'%')
+            </if>
+        </where>
+    </select>
+
+
+
+<!--    <select id="selectAllByAdmin" resultType="com.fufufu.pojo.StudentCourse">
+        &lt;!&ndash; WHERE 1 = 1是一个常用的技巧，用于确保动态生成的SQL语句在语法上是正确的，即使没有任何<if>条件被满足。 &ndash;&gt;
+        select student_course.* , student.nickname ,student.username from student_course
+        left join student
+        on  student_course.student_id = student.id
+        <where>
+            <if test="name != null and name != '' ">
+                and student_course.name like concat('%',#{name},'%')
+            </if>
+            <if test="no != null and no != '' ">
+                and student_course.no like concat('%',#{no},'%')
+            </if>
+        </where>
+    </select>-->
+
+
+</mapper>

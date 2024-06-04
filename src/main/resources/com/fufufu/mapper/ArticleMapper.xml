@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fufufu.mapper.ArticleMapper">
+    <!--动态sql-->
+    <select id="listByAdmin" resultType="com.fufufu.pojo.Article">
+        <!-- WHERE 1 = 1是一个常用的技巧，用于确保动态生成的SQL语句在语法上是正确的，即使没有任何<if>条件被满足。 -->
+        select a.* ,
+        t.nickname as teaNickname,
+        s.nickname as stuNickname
+        from
+        article a
+        left join
+        teacher t
+        on
+        a.create_user = t.id and a.role = t.role
+        left join
+        student s
+        on
+        a.create_user = s.id and a.role = s.role
+        <where>
+            <if test="categoryId!=null">
+                a.category_id=#{categoryId}
+            </if>
+
+            <if test="state!=null">
+                and a.state=#{state}
+            </if>
+        </where>
+    </select>
+
+    <!--天坑注意！！！
+        s.nickname as stuNickname 取得别名只能是这种形式，如果写成stu_nickname，无论逻辑正确与否都会报错！！！！
+        s.nickname as stuNickname 取得别名只能是这种形式，如果写成stu_nickname，无论逻辑正确与否都会报错！！！！
+        s.nickname as stuNickname 取得别名只能是这种形式，如果写成stu_nickname，无论逻辑正确与否都会报错！！！！
+     -->
+    <!--方法一：-->
+
+    <select id="list" resultType="com.fufufu.pojo.Article">
+        <choose>
+            <when test="role == 'STUDENT'">
+                select a.*, s.nickname as stuNickname
+                from article a
+                left join student s on a.create_user = s.id
+                where a.role = 'STUDENT'
+                <if test="categoryId != null">
+                    and a.category_id = #{categoryId}
+                </if>
+                <if test="state != null">
+                    and a.state = #{state}
+                </if>
+                and a.create_user = #{userId}
+            </when>
+            <when test="role == 'TEACHER'">
+                select a.*, t.nickname as teaNickname
+                from article a
+                left join teacher t on a.create_user = t.id
+                where a.role = 'TEACHER'
+                <if test="categoryId != null">
+                    and a.category_id = #{categoryId}
+                </if>
+                <if test="state != null">
+                    and a.state = #{state}
+                </if>
+                and a.create_user = #{userId}
+            </when>
+            <otherwise>
+                <!-- Handle other cases or throw an exception -->
+                SELECT 'Invalid role' as error_message
+            </otherwise>
+        </choose>
+    </select>
+
+    <!--方法二：-->
+
+    <!--    <select id="listByStudent" resultType="com.fufufu.pojo.Article">
+        select article.* , student.nickname as stuNickname from article
+            left join student
+                on article.create_user = student.id
+        <where>
+            <if test="categoryId!=null">
+                article.category_id=#{categoryId}
+            </if>
+
+            <if test="state!=null">
+                and article.state=#{state}
+            </if>
+            and article.create_user=#{userId} and article.role=#{role}
+        </where>
+    </select>
+
+    <select id="listByTeacher" resultType="com.fufufu.pojo.Article">
+        select article.* , teacher.nickname as teaNickname from article
+        left join teacher
+        on article.create_user = teacher.id
+        <where>
+            <if test="categoryId!=null">
+                article.category_id=#{categoryId}
+            </if>
+
+            <if test="state!=null">
+                and article.state=#{state}
+            </if>
+
+            and article.create_user=#{userId} and article.role=#{role}
+        </where>
+    </select>-->
+
+
+</mapper>
